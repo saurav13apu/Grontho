@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from "antd";
-import Layout from "antd/es/layout/layout.js";
-import AdminMenu from "./../../Components/Layout/AdminMenu.js";
-import toast from "react-hot-toast";
+import Layout from "./../../Components/Layout/Layout";
+import AdminMenu from "../../Components/Layout/AdminMenu";
+import { toast } from "react-hot-toast";
 import axios from "axios";
-import CategoryForm from './../../Components/Form/CategoryForm.js';
-
-
+import CategoryForm from "../../Components/Form/CategoryForm";
+import { Modal } from "antd";
+import "./CreateCategory.css";
 
 const CreateCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -14,13 +13,15 @@ const CreateCategory = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [updatedName, setUpdatedName] = useState("");
+
   //handle Form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/v1/category/create-category", {
-        name,
-      });
+      const { data } = await axios.post(
+        "http://localhost:8000/api/v1/category/create-category",
+        { name }
+      );
       if (data?.success) {
         toast.success(`${name} is created`);
         getAllCategory();
@@ -29,25 +30,25 @@ const CreateCategory = () => {
       }
     } catch (error) {
       console.log(error);
-      // toast.error("somthing went wrong in input form");
+      toast.error("something went wrong in input form");
     }
   };
-
-  //get all cat
+  //get all category
   const getAllCategory = async () => {
     try {
-      const { data } = await axios.get("/api/v1/category/get-category");
-      if (data?.success) {
-        setCategories(data?.category);
+      const { data } = await axios.get(
+        "http://localhost:8000/api/v1/category/get-category"
+      );
+      if (data.success) {
+        setCategories(data.category);
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
   useEffect(() => {
-    console.log('ggg')
     getAllCategory();
   }, []);
 
@@ -56,10 +57,10 @@ const CreateCategory = () => {
     e.preventDefault();
     try {
       const { data } = await axios.put(
-        `/api/v1/category/update-category/${selected._id}`,
+        `http://localhost:8000/api/v1/category/update-category/${selected._id}`,
         { name: updatedName }
       );
-      if (data?.success) {
+      if (data.success) {
         toast.success(`${updatedName} is updated`);
         setSelected(null);
         setUpdatedName("");
@@ -69,29 +70,30 @@ const CreateCategory = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong");
     }
   };
+
   //delete category
-  const handleDelete = async (pId) => {
+  const handleDelete = async (id) => {
     try {
       const { data } = await axios.delete(
-        `/api/v1/category/delete-category/${pId}`
+        `http://localhost:8000/api/v1/category/delete-category/${id}`
       );
       if (data.success) {
-        toast.success(`category is deleted`);
-
+        toast.success(`Category is deleted`);
         getAllCategory();
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Somtihing went wrong");
+      toast.error("Something went wrong");
     }
   };
+
   return (
     <Layout title={"Dashboard - Create Category"}>
-      <div className="container-fluid m-3 p-3 dashboard">
+      <div className="container-fluid m-3 p-3">
         <div className="row">
           <div className="col-md-3">
             <AdminMenu />

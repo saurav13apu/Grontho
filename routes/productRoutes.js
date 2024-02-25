@@ -1,30 +1,45 @@
-import  express from "express";
+import express from "express";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
-import { brainTreePaymentController, braintreeTokenController, createProductController, deleteProductController, getProductController, getSingleProductController, productCategoryController, productCountController, productFiltersController, productListController, productPhotoController, realtedProductController, searchProductController, updateProductController } from "../controllers/productController.js";
+import {
+  brainTreePaymentController,
+  braintreeTokenController,
+  createProductController,
+  deleteProductController,
+  getProductController,
+  getSingleProductController,
+  productCategoryController,
+  productCountController,
+  productFiltersController,
+  productListController,
+  productPhotoController,
+  realtedProductController,
+  searchProductController,
+  updateProductController,
+} from "../controllers/productController.js";
 import formidable from "express-formidable";
 
-const router = express.Router()
+const router = express.Router();
 
 //routes
 router.post(
-    '/create-products',
-    requireSignIn, 
-    isAdmin, 
-    formidable(), 
-    createProductController
+  "/create-products",
+  requireSignIn,
+  isAdmin,
+  formidable(),
+  createProductController
 );
 
 //routes
 router.put(
-    "/update-product/:pid",
-    requireSignIn,
-    isAdmin,
-    formidable(),
-    updateProductController
+  "/update-product/:pid",
+  requireSignIn,
+  isAdmin,
+  formidable(),
+  updateProductController
 );
 
 //get products
-router.get('/get-products', getProductController);
+router.get("/get-products", getProductController);
 
 //single product
 router.get("/get-product/:slug", getSingleProductController);
@@ -60,5 +75,4 @@ router.get("/braintree/token", braintreeTokenController);
 //payments
 router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
 
-
-export default router
+export default router;

@@ -1,0 +1,8 @@
+.table tbody tr {
+    margin-bottom: 10px; /* Adjust as needed */
+  }
+  
+  /* Add spacing between columns */
+  .table td, .table th {
+    padding-right: 10px; /* Adjust as needed */
+  }

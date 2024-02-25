@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import axios, { Axios } from 'axios'
 import {useNavigate} from 'react-router-dom'
 import "../../styles/AuthStyles.css"
+import { getClientKey } from 'login-secure';
 
 const Register = () => {
 
