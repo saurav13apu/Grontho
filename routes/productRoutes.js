@@ -1,12 +1,12 @@
 import express from "express";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import {
-  brainTreePaymentController,
-  braintreeTokenController,
   createProductController,
   deleteProductController,
   getProductController,
   getSingleProductController,
+  ordersController,
+  ordersValidate,
   productCategoryController,
   productCountController,
   productFiltersController,
@@ -70,9 +70,12 @@ router.get("/product-category/:slug", productCategoryController);
 
 //payments routes
 //token
-router.get("/braintree/token", braintreeTokenController);
 
-//payments
-router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
+router.post("/razorpay/payment", ordersController);
+router.post("/razorpay/validate", ordersValidate);
+// router.get("/braintree/token", braintreeTokenController);
+
+// //payments
+// router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
 
 export default router;

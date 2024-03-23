@@ -3,8 +3,12 @@ import Layout from "./../Components/Layout/Layout";
 import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const CartPage = () => {
+  const currency = "INR";
+  const receipt = "qwsaq1";
+
   const [cart, setCart] = useCart();
   const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
@@ -23,10 +27,95 @@ const CartPage = () => {
       if (cart.length > 4) {
         total = total + 59;
       }
-      return total.toLocaleString("en-IN", {
-        style: "currency",
-        currency: "INR",
+      return total;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //payment
+  const paymentHandler = async (e) => {
+    try {
+      const amount = totalPrice() * 100;
+      //amount = amount.toLocaleNumber("en-US");
+      const res = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/products/razorpay/payment`,
+        { amount, currency, receipt },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const order = res.data;
+      console.log(order);
+
+      var options = {
+        key: "rzp_test_pll8LNr8oMbUmt", // Enter the Key ID generated from the Dashboard
+        amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        currency,
+        name: "Acme Corp", //your business name
+        description: "Test Transaction",
+        image: "https://example.com/your_logo",
+        order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+
+        // handler: function (response) {
+        //   alert(response.razorpay_payment_id);
+        //   alert(response.razorpay_order_id);
+        //   alert(response.razorpay_signature);
+        //   console.log(response.razorpay_payment_id);
+        //   console.log(response.razorpay_order_id);
+        //   console.log(response.razorpay_signature);
+        // },
+
+        handler: async function (response) {
+          const body = {
+            ...response,
+          };
+
+          try {
+            const validateRes = await axios.post(
+              "http://localhost:8000/api/v1/products/razorpay/validate",
+              body,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            const jsonRes = validateRes.data;
+            console.log(jsonRes);
+          } catch (error) {
+            console.error(error);
+          }
+        },
+        prefill: {
+          //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+          name: "Gaurav Kumar", //your customer's name
+          email: "gaurav.kumar@example.com",
+          contact: "9000090000", //Provide the customer's phone number for better conversion rates
+        },
+        notes: {
+          address: "Razorpay Corporate Office",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+      var rzp1 = new window.Razorpay(options);
+      rzp1.on("payment.failed", function (response) {
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
       });
+
+      rzp1.open();
+      e.preventDefault();
     } catch (error) {
       console.log(error);
     }
@@ -96,7 +185,7 @@ const CartPage = () => {
             <p>Total | Checkout | Payment</p>
             <p>(Including Delivery Charge: 59/-)</p>
             <hr />
-            <h4>Total : {totalPrice()}</h4>
+            <h4>Total : {totalPrice()} /-</h4>
             {auth?.user?.address ? (
               <>
                 <div className="mb-3">
@@ -133,6 +222,11 @@ const CartPage = () => {
                 )}
               </div>
             )}
+            <div className="mt-2">
+              <button className="btn btn-primary" onClick={paymentHandler}>
+                MAKE PAYMENT
+              </button>
+            </div>
           </div>
         </div>
       </div>
