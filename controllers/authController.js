@@ -1,6 +1,6 @@
-import { compare } from "bcrypt";
 import { comparePassword, hashPassword } from "../helpers/authHelper.js";
 import userModel from "../models/userModel.js";
+import orderModel from "../models/orderModel.js";
 import JWT from "jsonwebtoken";
 
 export const registerController = async (req, res) => {
@@ -194,6 +194,63 @@ export const updateProfileController = async (req, res) => {
       success: false,
       message: "Error While Update profile",
       error,
+    });
+  }
+};
+
+//orders
+export const getOrdersController = async (req, res) => {
+  try {
+    const orders = await orderModel
+      .find({ buyer: req.user._id })
+      .populate("products", "-photo")
+      .populate("buyer", "name");
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error WHile Geting Orders",
+      error,
+    });
+  }
+};
+
+//add to cart
+export const addToCartController = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const user = await userModel.findById(req.user._id);
+    user.cart.push(productId);
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "Added To Cart",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error While Adding To Cart",
+    });
+  }
+};
+
+//get cart
+export const getCartController = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user._id);
+    await user.populate("cart");
+    console.log({ user });
+    return res.status(200).json({
+      success: true,
+      cart: user.cart,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error In Retrieving Cart",
     });
   }
 };

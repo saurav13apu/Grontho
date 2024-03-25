@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import Badge from "antd";
 
 const HomPage = () => {
-  const [cart, setCart] = useCart();
+  const [cart, setCart, clearCart] = useCart();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -116,6 +116,22 @@ const HomPage = () => {
     }
   };
 
+  //add to cart
+  const handleAddToCart = async (product) => {
+    const res = await axios.post(
+      "http://localhost:8000/api/v1/auth/add-to-cart",
+      {
+        productId: product._id,
+      }
+    );
+    if (res?.data?.success) {
+      setCart((prevCart) => {
+        return [...prevCart, product];
+      });
+      toast.success("Item Added to Cart");
+    }
+  };
+
   return (
     <Layout title={"All Products- Best Offers "}>
       <div className="row mt-3 ms-2">
@@ -177,12 +193,7 @@ const HomPage = () => {
                   <button
                     className="btn btn-secondary ms-1"
                     onClick={() => {
-                      setCart([...cart, p]);
-                      localStorage.setItem(
-                        "cart",
-                        JSON.stringify([...cart, p])
-                      );
-                      toast.success("Item Added to Cart");
+                      handleAddToCart(p);
                     }}
                   >
                     ADD TO CART

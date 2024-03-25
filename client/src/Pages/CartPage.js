@@ -10,7 +10,7 @@ const CartPage = () => {
   const currency = "INR";
   const receipt = "qwsaq1";
   const poisa = 229;
-  const [cart, setCart] = useCart();
+  const [cart, setCart, clearCart] = useCart();
   const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
 
@@ -61,8 +61,6 @@ const CartPage = () => {
         }
       );
       const order = res.data;
-      console.log({ cart });
-      console.log({ order });
 
       var options = {
         key: "rzp_test_pll8LNr8oMbUmt", // Enter the Key ID generated from the Dashboard
@@ -87,8 +85,7 @@ const CartPage = () => {
             );
 
             const jsonRes = validateRes.data;
-            localStorage.removeItem("cart");
-            setCart([]);
+            clearCart();
             navigate("/dashboard/user/orders");
             toast.success("Payment Completed Successfully ");
           } catch (error) {
@@ -129,11 +126,12 @@ const CartPage = () => {
   //remove item
   const removeCartItem = (pid) => {
     try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
+      return;
+      // let myCart = [...cart];
+      // let index = myCart.findIndex((item) => item._id === pid);
+      // myCart.splice(index, 1);
+      // setCart(myCart);
+      // localStorage.setItem("cart", JSON.stringify(myCart));
     } catch (error) {
       console.log(error);
     }

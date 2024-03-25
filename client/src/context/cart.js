@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState, useContext, createContext, useEffect } from "react";
 
 const CartContext = createContext();
@@ -6,12 +7,20 @@ const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    let existingCartItem = localStorage.getItem("cart");
-    if (existingCartItem) setCart(JSON.parse(existingCartItem));
+    const token = JSON.parse(localStorage.getItem("auth")).token;
+    axios.defaults.headers.common["Authorization"] = token;
+    const fn = async () => {
+      const res = await axios.get("http://localhost:8000/api/v1/auth/cart");
+      console.log({ data: res.data });
+      setCart(res.data.cart);
+    };
+    fn();
   }, []);
 
+  const clearCart = async () => {};
+
   return (
-    <CartContext.Provider value={[cart, setCart]}>
+    <CartContext.Provider value={[cart, setCart, clearCart]}>
       {children}
     </CartContext.Provider>
   );
