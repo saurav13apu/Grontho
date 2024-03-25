@@ -325,8 +325,6 @@ export const productCategoryController = async (req, res) => {
 //payment gateway api
 //token
 
-//payment
-
 export const ordersController = async (req, res) => {
   try {
     const razorpay = new Razorpay({
@@ -334,11 +332,17 @@ export const ordersController = async (req, res) => {
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
     const options = req.body;
+
     const order = await razorpay.orders.create(options);
 
     if (!order) {
       return res.status(500).send(error);
     }
+    // const oneorder = new orderModel({
+    //   products: req.body,
+    //   payment: order,
+    //   buyer: req.user._id,
+    // }).save();
     res.json(order);
   } catch (error) {
     console.log(error);
@@ -349,8 +353,15 @@ export const ordersController = async (req, res) => {
 //Payment verify
 export const ordersValidate = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      req.body;
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      cart,
+      poisa,
+    } = req.body;
+
+    console.log(req.body);
 
     const sha = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
 
@@ -360,6 +371,13 @@ export const ordersValidate = async (req, res) => {
     if (digest !== razorpay_signature) {
       return res.status(400).json({ msg: "Transaction is not legit!" });
     }
+
+    const oneorder = new orderModel({
+      products: cart,
+      payment: poisa,
+      buyer: req.user._id,
+      paid: 1,
+    }).save();
 
     res.json({
       msg: "success",

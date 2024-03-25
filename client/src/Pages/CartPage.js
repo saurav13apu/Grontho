@@ -4,11 +4,12 @@ import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const CartPage = () => {
   const currency = "INR";
   const receipt = "qwsaq1";
-
+  const poisa = 229;
   const [cart, setCart] = useCart();
   const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
@@ -27,7 +28,10 @@ const CartPage = () => {
       if (cart.length > 4) {
         total = total + 59;
       }
-      return total;
+      return total.toLocaleString("en-US", {
+        style: "currency",
+        currency: "INR",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -36,8 +40,17 @@ const CartPage = () => {
   //payment
   const paymentHandler = async (e) => {
     try {
-      const amount = totalPrice() * 100;
-      //amount = amount.toLocaleNumber("en-US");
+      let amount = 0;
+      cart.map((i) => {
+        amount += i.price;
+      });
+      if (cart.length > 0) {
+        amount = amount + 59;
+      }
+      if (cart.length > 4) {
+        amount = amount + 59;
+      }
+      amount = amount * 100;
       const res = await axios.post(
         `${process.env.REACT_APP_API}/api/v1/products/razorpay/payment`,
         { amount, currency, receipt },
@@ -47,45 +60,37 @@ const CartPage = () => {
           },
         }
       );
-
       const order = res.data;
-      console.log(order);
+      console.log({ cart });
+      console.log({ order });
 
       var options = {
         key: "rzp_test_pll8LNr8oMbUmt", // Enter the Key ID generated from the Dashboard
         amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         currency,
-        name: "Acme Corp", //your business name
+        name: "Grontho.in", //your business name
         description: "Test Transaction",
         image: "https://example.com/your_logo",
         order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
 
-        // handler: function (response) {
-        //   alert(response.razorpay_payment_id);
-        //   alert(response.razorpay_order_id);
-        //   alert(response.razorpay_signature);
-        //   console.log(response.razorpay_payment_id);
-        //   console.log(response.razorpay_order_id);
-        //   console.log(response.razorpay_signature);
-        // },
-
         handler: async function (response) {
           const body = {
             ...response,
+            cart,
+            poisa,
           };
 
           try {
             const validateRes = await axios.post(
-              "http://localhost:8000/api/v1/products/razorpay/validate",
-              body,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
+              `http://localhost:8000/api/v1/products/razorpay/validate`,
+              body
             );
+
             const jsonRes = validateRes.data;
-            console.log(jsonRes);
+            localStorage.removeItem("cart");
+            setCart([]);
+            navigate("/dashboard/user/orders");
+            toast.success("Payment Completed Successfully ");
           } catch (error) {
             console.error(error);
           }
@@ -223,7 +228,11 @@ const CartPage = () => {
               </div>
             )}
             <div className="mt-2">
-              <button className="btn btn-primary" onClick={paymentHandler}>
+              <button
+                className="btn btn-primary"
+                onClick={paymentHandler}
+                disabled={!auth?.user?.address}
+              >
                 MAKE PAYMENT
               </button>
             </div>

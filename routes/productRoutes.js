@@ -72,10 +72,6 @@ router.get("/product-category/:slug", productCategoryController);
 //token
 
 router.post("/razorpay/payment", ordersController);
-router.post("/razorpay/validate", ordersValidate);
-// router.get("/braintree/token", braintreeTokenController);
-
-// //payments
-// router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
+router.post("/razorpay/validate", requireSignIn, ordersValidate);
 
 export default router;
