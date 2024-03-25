@@ -5,6 +5,7 @@ import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import "../styles/CartStyles.css";
 
 const CartPage = () => {
   const currency = "INR";
@@ -80,7 +81,7 @@ const CartPage = () => {
 
           try {
             const validateRes = await axios.post(
-              `http://localhost:8000/api/v1/products/razorpay/validate`,
+              `${process.env.REACT_APP_API}/api/v1/products/razorpay/validate`,
               body
             );
 
@@ -162,7 +163,7 @@ const CartPage = () => {
               <div className="row mb-2 p-3 card flex-row">
                 <div className="col-md-4">
                   <img
-                    src={`http://localhost:8000/api/v1/products/product-photo/${p._id}`}
+                    src={`${process.env.REACT_APP_API}/api/v1/products/product-photo/${p._id}`}
                     className="card-img-top"
                     alt={p.name}
                     width="70px"

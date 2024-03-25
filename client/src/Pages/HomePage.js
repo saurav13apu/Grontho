@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/cart";
 import toast from "react-hot-toast";
 import Badge from "antd";
+import "../styles/Homepage.css";
 
 const HomPage = () => {
   const [cart, setCart, clearCart] = useCart();
@@ -23,7 +24,7 @@ const HomPage = () => {
   const getAllCategory = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/v1/category/get-category"
+        `${process.env.REACT_APP_API}/api/v1/category/get-category`
       );
       if (data?.success) {
         setCategories(data?.category);
@@ -42,7 +43,7 @@ const HomPage = () => {
   const getTotal = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/v1/products/product-count"
+        `${process.env.REACT_APP_API}/api/v1/products/product-count`
       );
       setTotal(data?.total);
     } catch (error) {
@@ -55,7 +56,7 @@ const HomPage = () => {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        `http://localhost:8000/api/v1/products/product-list/${page}`
+        `${process.env.REACT_APP_API}/api/v1/products/product-list/${page}`
       );
       setLoading(false);
       setProducts(data.products);
@@ -74,7 +75,7 @@ const HomPage = () => {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        `http://localhost:8000/api/v1/products/product-list/${page}`
+        `${process.env.REACT_APP_API}/api/v1/products/product-list/${page}`
       );
       setLoading(false);
       setProducts([...products, ...data?.products]);
@@ -107,7 +108,7 @@ const HomPage = () => {
   const filteredProduct = async () => {
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/products/product-filters",
+        `${process.env.REACT_APP_API}/api/v1/products/product-filters`,
         { checked, radio }
       );
       setProducts(data?.products);
@@ -119,7 +120,7 @@ const HomPage = () => {
   //add to cart
   const handleAddToCart = async (product) => {
     const res = await axios.post(
-      "http://localhost:8000/api/v1/auth/add-to-cart",
+      `${process.env.REACT_APP_API}/api/v1/auth/add-to-cart`,
       {
         productId: product._id,
       }
@@ -174,7 +175,7 @@ const HomPage = () => {
             {products?.map((p) => (
               <div className="card m-2" style={{ width: "18rem" }}>
                 <img
-                  src={`http://localhost:8000/api/v1/products/product-photo/${p._id}`}
+                  src={`${process.env.REACT_APP_API}/api/v1/products/product-photo/${p._id}`}
                   className="card-img-top"
                   alt={p.name}
                 />
