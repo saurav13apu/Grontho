@@ -294,3 +294,27 @@ export const getCartController = async (req, res) => {
     });
   }
 };
+
+export const removeFromCartController = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const user = await userModel.findById(req.user._id);
+    let cart = user.cart;
+    const idx = cart.findIndex((id) => id.toString() === productId);
+    if (idx >= 0) {
+      user.cart.splice(idx, 1);
+      await user.save();
+    }
+    console.log(user.cart);
+    return res.status(201).json({
+      success: true,
+      message: "Product Removed From Cart",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error In Removing From Cart",
+    });
+  }
+};

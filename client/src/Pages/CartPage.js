@@ -73,8 +73,13 @@ const CartPage = () => {
         order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
 
         handler: async function (response) {
+          const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+            response;
+
           const body = {
-            ...response,
+            razorpay_order_id,
+            razorpay_payment_id,
+            razorpay_signature,
             cart,
             poisa,
           };
@@ -86,7 +91,7 @@ const CartPage = () => {
             );
 
             const jsonRes = validateRes.data;
-            clearCart();
+            setCart([]);
             navigate("/dashboard/user/orders");
             toast.success("Payment Completed Successfully ");
           } catch (error) {
@@ -125,16 +130,22 @@ const CartPage = () => {
   };
 
   //remove item
-  const removeCartItem = (pid) => {
+  const removeCartItem = async (product) => {
     try {
-      return;
-      // let myCart = [...cart];
-      // let index = myCart.findIndex((item) => item._id === pid);
-      // myCart.splice(index, 1);
-      // setCart(myCart);
-      // localStorage.setItem("cart", JSON.stringify(myCart));
+      const res = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/auth/remove-from-cart`,
+        {
+          productId: product._id,
+        }
+      );
+      if (res.data?.success) {
+        toast.success(res.data.message);
+        window.location.reload();
+      }
+      console.log({ data: res.data });
     } catch (error) {
       console.log(error);
+      toast.error("Error Removing Object From Cart");
     }
   };
 
@@ -176,7 +187,7 @@ const CartPage = () => {
                   <p>Price: {p.price}</p>
                   <button
                     className="btn btn-danger"
-                    onClick={() => removeCartItem(p._id)}
+                    onClick={() => removeCartItem(p)}
                   >
                     Remove
                   </button>

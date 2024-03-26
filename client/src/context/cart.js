@@ -13,16 +13,13 @@ const CartProvider = ({ children }) => {
       const res = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/auth/cart`
       );
-      console.log({ data: res.data });
       setCart(res.data.cart);
     };
     fn();
   }, []);
 
-  const clearCart = async () => {};
-
   return (
-    <CartContext.Provider value={[cart, setCart, clearCart]}>
+    <CartContext.Provider value={[cart, setCart]}>
       {children}
     </CartContext.Provider>
   );

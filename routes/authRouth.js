@@ -10,6 +10,7 @@ import {
   getCartController,
   getAllOrdersController,
   orderStatusController,
+  removeFromCartController,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -58,6 +59,7 @@ router.put(
 
 //cart
 router.post("/add-to-cart", requireSignIn, addToCartController);
+router.post("/remove-from-cart", requireSignIn, removeFromCartController);
 router.get("/cart", requireSignIn, getCartController);
 
 export default router;

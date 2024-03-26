@@ -8,6 +8,7 @@ import braintree from "braintree";
 import Razorpay from "razorpay";
 import { error } from "console";
 import crypto from "crypto";
+import userModel from "../models/userModel.js";
 
 dotenv.config();
 
@@ -361,7 +362,7 @@ export const ordersValidate = async (req, res) => {
       poisa,
     } = req.body;
 
-    console.log(req.body);
+    console.log({ cart });
 
     const sha = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
 
@@ -378,6 +379,12 @@ export const ordersValidate = async (req, res) => {
       buyer: req.user._id,
       paid: 1,
     }).save();
+
+    let user = await userModel.findById(req.user._id);
+    // user.update({ $set: { arrayField: [] } })
+    user.cart = [];
+    await user.save();
+    console.log({ hello: user });
 
     res.json({
       msg: "success",
