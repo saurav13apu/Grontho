@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/cart";
 import toast from "react-hot-toast";
 import Badge from "antd";
-import "../styles/Homepage.css";
 
 const HomPage = () => {
   const [cart, setCart, clearCart] = useCart();

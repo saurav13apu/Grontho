@@ -3,8 +3,11 @@ import Layout from "./../Components/Layout/Layout";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/cart";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
+  const [cart, setCart, clearCart] = useCart();
   const params = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
@@ -40,6 +43,22 @@ const ProductDetails = () => {
     }
   };
 
+  //add to cart
+  const handleAddToCart = async (product) => {
+    const res = await axios.post(
+      `${process.env.REACT_APP_API}/api/v1/auth/add-to-cart`,
+      {
+        productId: product._id,
+      }
+    );
+    if (res?.data?.success) {
+      setCart((prevCart) => {
+        return [...prevCart, product];
+      });
+      toast.success("Item Added to Cart");
+    }
+  };
+
   return (
     <Layout>
       <div className="row container mt-2">
@@ -65,7 +84,14 @@ const ProductDetails = () => {
             })}
           </h6>
           <h6>Category : {product?.category?.name}</h6>
-          <button class="btn btn-secondary ms-1">ADD TO CART</button>
+          <button
+            class="btn btn-secondary ms-1"
+            onClick={() => {
+              handleAddToCart(product);
+            }}
+          >
+            ADD TO CART
+          </button>
         </div>
       </div>
       <hr />
@@ -92,7 +118,14 @@ const ProductDetails = () => {
                 >
                   More Details
                 </button>
-                <button className="btn btn-secondary ms-1">ADD TO CART</button>
+                <button
+                  className="btn btn-secondary ms-1"
+                  onClick={() => {
+                    handleAddToCart(p);
+                  }}
+                >
+                  ADD TO CART
+                </button>
               </div>
             </div>
           ))}
