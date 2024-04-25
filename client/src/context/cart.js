@@ -7,15 +7,18 @@ const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("auth")).token;
-    axios.defaults.headers.common["Authorization"] = token;
-    const fn = async () => {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/auth/cart`
-      );
-      setCart(res.data.cart);
-    };
-    fn();
+    const temp = JSON.parse(localStorage.getItem("auth"));
+    if (temp) {
+      const token = temp.token;
+      axios.defaults.headers.common["Authorization"] = token;
+      const fn = async () => {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API}/api/v1/auth/cart`
+        );
+        setCart(res.data.cart);
+      };
+      fn();
+    }
   }, []);
 
   return (
