@@ -5,7 +5,6 @@ import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import "../styles/CartStyles.css";
 
 const CartPage = () => {
   const currency = "INR";
@@ -70,7 +69,7 @@ const CartPage = () => {
         currency,
         name: "Grontho.in", //your business name
         description: "Test Transaction",
-        image: "clientsrcimagelogo.jpg",
+        image: "client/src/image/logo.jpg",
         order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
 
         handler: async function (response) {
