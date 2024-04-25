@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Layout from "./../Components/Layout/Layout";
 import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 const CartPage = () => {
   const currency = "INR";
   const receipt = "qwsaq1";
+  const poisa = 229;
   const [cart, setCart, clearCart] = useCart();
   const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ const CartPage = () => {
       if (cart.length > 4) {
         total = total + 59;
       }
-
       return total.toLocaleString("en-US", {
         style: "currency",
         currency: "INR",
@@ -50,7 +50,6 @@ const CartPage = () => {
       if (cart.length > 4) {
         amount = amount + 59;
       }
-      let poisa = amount;
       amount = amount * 100;
       const res = await axios.post(
         `${process.env.REACT_APP_API}/api/v1/products/razorpay/payment`,
